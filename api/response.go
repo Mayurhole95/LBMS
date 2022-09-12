@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/Mayurhole95/Library-Management-System/app"
+	"github.com/Mayurhole95/LBMS/app"
 )
 
 type Response struct {

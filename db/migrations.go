@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Mayurhole95/Library-Management-System/config"
+	"github.com/Mayurhole95/LBMS/config"
 	_ "github.com/lib/pq"
 	"github.com/mattes/migrate"
 	"github.com/mattes/migrate/database"

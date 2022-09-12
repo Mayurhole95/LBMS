@@ -1,6 +1,6 @@
 package user
 
-import "github.com/Mayurhole95/Library-Management-System/db"
+import "github.com/Mayurhole95/LBMS/db"
 
 type updateRequest struct {
 	ID         string `json:"id"`

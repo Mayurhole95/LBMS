@@ -3,10 +3,10 @@ package main
 import (
 	"os"
 
-	"github.com/Mayurhole95/Library-Management-System/app"
-	"github.com/Mayurhole95/Library-Management-System/config"
-	"github.com/Mayurhole95/Library-Management-System/db"
-	"github.com/Mayurhole95/Library-Management-System/server"
+	"github.com/Mayurhole95/LBMS/app"
+	"github.com/Mayurhole95/LBMS/config"
+	"github.com/Mayurhole95/LBMS/db"
+	"github.com/Mayurhole95/LBMS/server"
 	"github.com/urfave/cli"
 )
 

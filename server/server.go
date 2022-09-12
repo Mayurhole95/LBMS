@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/Mayurhole95/Library-Management-System/config"
+	"github.com/Mayurhole95/LBMS/config"
 	"github.com/urfave/negroni"
 )
 

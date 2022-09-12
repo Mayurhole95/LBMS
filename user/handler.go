@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/Mayurhole95/Library-Management-System/api"
+	"github.com/Mayurhole95/LBMS/api"
 	"github.com/gorilla/mux"
 )
 

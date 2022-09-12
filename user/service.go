@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 
-	"github.com/Mayurhole95/Library-Management-System/db"
+	"github.com/Mayurhole95/LBMS/db"
 
 	"go.uber.org/zap"
 )

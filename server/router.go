@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/Mayurhole95/Library-Management-System/api"
-	"github.com/Mayurhole95/Library-Management-System/config"
+	"github.com/Mayurhole95/LBMS/api"
+	"github.com/Mayurhole95/LBMS/config"
 	"github.com/gorilla/mux"
 )
 

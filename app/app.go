@@ -3,7 +3,7 @@ package app
 import (
 	"time"
 
-	"github.com/Mayurhole95/Library-Management-System/config"
+	"github.com/Mayurhole95/LBMS/config"
 	"github.com/jmoiron/sqlx"
 	"go.uber.org/zap"
 )
