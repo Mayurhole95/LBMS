@@ -1,37 +1,79 @@
-package user
+package db
 
-import "github.com/Mayurhole95/LBMS/db"
+import (
+	"context"
+	"database/sql"
+	"time"
 
-type updateRequest struct {
-	ID         string `json:"id"`
-	First_Name string `json:"name"`
+	"github.com/jmoiron/sqlx"
+	"github.com/pkg/errors"
+)
+
+type ctxKey int
+
+const (
+	dbKey          ctxKey = 0
+	defaultTimeout        = 1 * time.Second
+)
+
+type Storer interface {
+	//User
+	CreateUser(ctx context.Context, user *User) (err error)
+	ListUsers(ctx context.Context) (users []User, err error)
+	FindUserByID(ctx context.Context, id string) (user User, err error)
+	DeleteUserByID(ctx context.Context, id string) (err error)
+	UpdateUser(ctx context.Context, user *User) (err error)
 }
 
-type createRequest struct {
-	First_Name string `json:"first_name"`
+type store struct {
+	db *sqlx.DB
 }
 
-type findByIDResponse struct {
-	User db.User `json:"user"`
+func newContext(ctx context.Context, tx *sqlx.Tx) context.Context {
+	return context.WithValue(ctx, dbKey, tx)
 }
 
-type listResponse struct {
-	Users []db.User `json:"users"`
-}
-
-func (cr createRequest) Validate() (err error) {
-	if cr.First_Name == "" {
-		return errEmptyName
+func Transact(ctx context.Context, dbx *sqlx.DB, opts *sql.TxOptions, txFunc func(context.Context) error) (err error) {
+	tx, err := dbx.BeginTxx(ctx, opts)
+	if err != nil {
+		return
 	}
-	return
+	defer func() {
+		if p := recover(); p != nil {
+			switch p := p.(type) {
+			case error:
+				err = errors.WithStack(p)
+			default:
+				err = errors.Errorf("%s", p)
+			}
+		}
+		if err != nil {
+			e := tx.Rollback()
+			if e != nil {
+				err = errors.WithStack(e)
+			}
+			return
+		}
+		err = errors.WithStack(tx.Commit())
+	}()
+	ctxWithTx := newContext(ctx, tx)
+	err = WithDefaultTimeout(ctxWithTx, txFunc)
+	return err
 }
 
-func (ur updateRequest) Validate() (err error) {
-	if ur.ID == "" {
-		return errEmptyID
+func WithTimeout(ctx context.Context, timeout time.Duration, op func(ctx context.Context) error) (err error) {
+	ctxWithTimeout, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+
+	return op(ctxWithTimeout)
+}
+
+func WithDefaultTimeout(ctx context.Context, op func(ctx context.Context) error) (err error) {
+	return WithTimeout(ctx, defaultTimeout, op)
+}
+
+func NewStorer(d *sqlx.DB) Storer {
+	return &store{
+		db: d,
 	}
-	if ur.First_Name == "" {
-		return errEmptyName
-	}
-	return
 }

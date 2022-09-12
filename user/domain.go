@@ -3,12 +3,20 @@ package user
 import "github.com/Mayurhole95/LBMS/db"
 
 type updateRequest struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID         string `json:"id"`
+	First_Name string `json:"name"`
 }
 
 type createRequest struct {
-	Name string `json:"name"`
+	ID         string `json:"id"`
+	First_name string `json:"first_name"`
+	Last_name  string `json:"last_name"`
+	Gender     string `json:"gender"`
+	Address    string `json:"address"`
+	Email      string `json:"email"`
+	Password   string `json:"password"`
+	Mob_no     string `json:"mob_no"`
+	Role       string `json:"role"`
 }
 
 type findByIDResponse struct {
@@ -20,7 +28,7 @@ type listResponse struct {
 }
 
 func (cr createRequest) Validate() (err error) {
-	if cr.Name == "" {
+	if cr.First_name == "" {
 		return errEmptyName
 	}
 	return
@@ -30,7 +38,7 @@ func (ur updateRequest) Validate() (err error) {
 	if ur.ID == "" {
 		return errEmptyID
 	}
-	if ur.Name == "" {
+	if ur.First_Name == "" {
 		return errEmptyName
 	}
 	return

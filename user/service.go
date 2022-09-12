@@ -44,7 +44,15 @@ func (cs *userService) create(ctx context.Context, c createRequest) (err error) 
 	}
 
 	err = cs.store.CreateUser(ctx, &db.User{
-		First_name: c.First_Name,
+		ID:         c.ID,
+		First_name: c.First_name,
+		Last_name:  c.Last_name,
+		Gender:     c.Gender,
+		Address:    c.Address,
+		Email:      c.Email,
+		Password:   c.Password,
+		Mob_no:     c.Mob_no,
+		Role:       c.Role,
 	})
 	if err != nil {
 		cs.logger.Error("Error creating user", "err", err.Error())
