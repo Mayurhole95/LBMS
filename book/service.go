@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/Mayurhole95/LBMS/db"
-
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
@@ -42,7 +42,8 @@ func (cs *bookService) create(ctx context.Context, c createRequest) (err error) 
 		cs.logger.Errorw("Invalid request for book creation", "msg", err.Error(), "book", c)
 		return
 	}
-
+	uuidgen := uuid.New()
+	c.ID = uuidgen.String()
 	err = cs.store.CreateBook(ctx, &db.Book{
 		ID:              c.ID,
 		Name:            c.Name,
