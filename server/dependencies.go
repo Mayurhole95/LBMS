@@ -2,7 +2,7 @@ package server
 
 import (
 	"github.com/Mayurhole95/LBMS/app"
-	"github.com/Mayurhole95/LBMS/book"
+	book "github.com/Mayurhole95/LBMS/book"
 	"github.com/Mayurhole95/LBMS/db"
 	"github.com/Mayurhole95/LBMS/user"
 )

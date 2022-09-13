@@ -7,9 +7,9 @@ import (
 )
 
 const (
-	createBookQuery = `INSERT INTO user ( 
-    ID,Name,Author,Price,TotalCopies,Status,AvailableCopies)
-    VALUES(?,?,?,?,?,?,?,?,?)`
+	createBookQuery = `INSERT INTO book ( 
+		id,name,author,price,total_copies,status,available_copies)
+    VALUES(?,?,?,?,?,?,?)`
 
 	listBooksQuery      = `SELECT * FROM book`
 	findBookByIDQuery   = `SELECT * FROM book WHERE id = ?`
@@ -18,21 +18,21 @@ const (
 )
 
 type Book struct {
-	ID              string `json:"id"`
-	Name            string `json:"name"`
-	Author          string `json:"author"`
-	Price           int    `json: "price"`
-	TotalCopies     int    `json: "total_copies"`
-	Status          string `json:"status"`
-	AvailableCopies int    `json: "available_copies"`
+	ID              string `db:"id"`
+	Name            string `db:"name"`
+	Author          string `db:"author"`
+	Price           int    `db:"price"`
+	TotalCopies     int    `db:"total_copies"`
+	Status          string `db:"status"`
+	AvailableCopies int    `db:"available_copies"`
 }
 
-func (s *store) CreateBOok(ctx context.Context, book *Book) (err error) {
+func (s *store) CreateBook(ctx context.Context, book *Book) (err error) {
 	//now := time.Now()
 
 	return Transact(ctx, s.db, &sql.TxOptions{}, func(ctx context.Context) error {
 		_, err = s.db.Exec(
-			createUserQuery,
+			createBookQuery,
 			book.ID,
 			book.Name,
 			book.Author,
@@ -84,7 +84,7 @@ func (s *store) UpdateBook(ctx context.Context, book *Book) (err error) {
 
 	return Transact(ctx, s.db, &sql.TxOptions{}, func(ctx context.Context) error {
 		_, err = s.db.Exec(
-			updateUserQuery,
+			updateBookQuery,
 			book.Name,
 			now,
 			book.ID,

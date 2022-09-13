@@ -1,4 +1,4 @@
-package user
+package book
 
 import (
 	"encoding/json"
@@ -52,7 +52,7 @@ func FindByID(service Service) http.HandlerFunc {
 	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		vars := mux.Vars(req)
 
-		resp, err := service.findByID(req.Context(), vars["user_id"])
+		resp, err := service.findByID(req.Context(), vars["book_id"])
 
 		if err == errNoBookId {
 			api.Error(rw, http.StatusNotFound, api.Response{Message: err.Error()})
@@ -71,7 +71,7 @@ func DeleteByID(service Service) http.HandlerFunc {
 	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		vars := mux.Vars(req)
 
-		err := service.deleteByID(req.Context(), vars["user_id"])
+		err := service.deleteByID(req.Context(), vars["book_id"])
 		if err == errNoBookId {
 			api.Error(rw, http.StatusNotFound, api.Response{Message: err.Error()})
 		}

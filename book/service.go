@@ -1,4 +1,4 @@
-package user
+package book
 
 import (
 	"context"
@@ -23,7 +23,7 @@ type bookService struct {
 
 func (cs *bookService) list(ctx context.Context) (response listResponse, err error) {
 	books, err := cs.store.ListBooks(ctx)
-	if err == db.ErrUserNotExist {
+	if err == db.ErrBookNotExist {
 		cs.logger.Error("No book present", "err", err.Error())
 		return response, errNoBooks
 	}

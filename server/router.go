@@ -4,7 +4,8 @@ import (
 	"net/http"
 
 	"github.com/Mayurhole95/LBMS/api"
-	"github.com/Mayurhole95/LBMS/user"
+	book "github.com/Mayurhole95/LBMS/book"
+	user "github.com/Mayurhole95/LBMS/user"
 	"github.com/gorilla/mux"
 )
 
@@ -24,6 +25,14 @@ func initRouter(dep dependencies) (router *mux.Router) {
 	router.HandleFunc("/users/{user_id}", user.FindByID(dep.UserService)).Methods(http.MethodGet)
 	router.HandleFunc("/users/{user_id}", user.DeleteByID(dep.UserService)).Methods(http.MethodDelete)
 	router.HandleFunc("/users", user.Update(dep.UserService)).Methods(http.MethodPut)
+
+	//Book
+
+	router.HandleFunc("/books", book.Create(dep.BookService)).Methods(http.MethodPost)
+	router.HandleFunc("/books", book.List(dep.BookService)).Methods(http.MethodGet)
+	router.HandleFunc("/books/{book_id}", book.FindByID(dep.BookService)).Methods(http.MethodGet)
+	router.HandleFunc("/books/{book_id}", book.DeleteByID(dep.BookService)).Methods(http.MethodDelete)
+	router.HandleFunc("/books", book.Update(dep.BookService)).Methods(http.MethodPut)
 
 	return
 }
