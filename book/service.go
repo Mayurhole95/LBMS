@@ -67,8 +67,13 @@ func (cs *bookService) update(ctx context.Context, c updateRequest) (err error) 
 	}
 
 	err = cs.store.UpdateBook(ctx, &db.Book{
-		ID:   c.ID,
-		Name: c.Name,
+		ID:              c.ID,
+		Name:            c.Name,
+		Author:          c.Author,
+		Price:           c.Price,
+		TotalCopies:     c.TotalCopies,
+		Status:          c.Status,
+		AvailableCopies: c.AvailableCopies,
 	})
 	if err != nil {
 		cs.logger.Error("Error updating book", "err", err.Error(), "book", c)

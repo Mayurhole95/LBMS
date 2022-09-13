@@ -3,8 +3,13 @@ package book
 import "github.com/Mayurhole95/LBMS/db"
 
 type updateRequest struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID              string `json:"id"`
+	Name            string `json:"name"`
+	Author          string `json:"author"`
+	Price           int    `json:"price"`
+	TotalCopies     int    `json:"total_copies"`
+	Status          string `json:"status"`
+	AvailableCopies int    `json:"available_copies"`
 }
 
 type createRequest struct {

@@ -3,7 +3,6 @@ package db
 import (
 	"context"
 	"database/sql"
-	"time"
 )
 
 const (
@@ -14,7 +13,7 @@ const (
 	listUsersQuery      = `SELECT * FROM user`
 	findUserByIDQuery   = `SELECT * FROM user WHERE id = ?`
 	deleteUserByIDQuery = `DELETE FROM user WHERE id = ?`
-	updateUserQuery     = `UPDATE user SET name = $1, updated_at = $2 where id = $3`
+	updateUserQuery     = `UPDATE user SET first_name=?, last_name=?, gender=?, address=?, password=?, mob_no=? WHERE id=? `
 )
 
 type User struct {
@@ -30,7 +29,6 @@ type User struct {
 }
 
 func (s *store) CreateUser(ctx context.Context, user *User) (err error) {
-	//now := time.Now()
 
 	return Transact(ctx, s.db, &sql.TxOptions{}, func(ctx context.Context) error {
 		_, err = s.db.Exec(
@@ -86,13 +84,16 @@ func (s *store) DeleteUserByID(ctx context.Context, id string) (err error) {
 }
 
 func (s *store) UpdateUser(ctx context.Context, user *User) (err error) {
-	now := time.Now()
 
 	return Transact(ctx, s.db, &sql.TxOptions{}, func(ctx context.Context) error {
 		_, err = s.db.Exec(
 			updateUserQuery,
 			user.First_name,
-			now,
+			user.Last_name,
+			user.Gender,
+			user.Address,
+			user.Password,
+			user.Mob_no,
 			user.ID,
 		)
 		return err

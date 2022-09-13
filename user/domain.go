@@ -4,7 +4,12 @@ import "github.com/Mayurhole95/LBMS/db"
 
 type updateRequest struct {
 	ID         string `json:"id"`
-	First_Name string `json:"name"`
+	First_Name string `json:"first_name"`
+	Last_name  string `json:"last_name"`
+	Gender     string `json:"gender"`
+	Address    string `json:"address"`
+	Password   string `json:"password"`
+	Mob_no     string `json:"mob_no"`
 }
 
 type createRequest struct {
