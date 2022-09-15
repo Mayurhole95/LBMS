@@ -42,8 +42,6 @@ func (s *store) CreateUser(ctx context.Context, user *User) (err error) {
 			user.Password,
 			user.Mob_no,
 			user.Role,
-			// now,
-			// now,
 		)
 		return err
 	})
