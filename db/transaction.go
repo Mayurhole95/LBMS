@@ -12,7 +12,6 @@ const (
     VALUES(?,?,?,?,?,?)`
 
 	listTransactionsQuery  = `SELECT * FROM transaction`
-	DeleteTransactionQuery = `DELETE FROM transaction WHERE id = ?`
 	UpdateTransactionQuery = `UPDATE transaction SET returndate=? WHERE book_id=? AND user_id=? AND returndate=0`
 )
 
@@ -53,19 +52,19 @@ func (s *store) ListTransaction(ctx context.Context) (transactions []Transaction
 	return
 }
 
-func (s *store) DeleteTransaction(ctx context.Context, id string) (err error) {
-	return Transact(ctx, s.db, &sql.TxOptions{}, func(ctx context.Context) error {
-		res, err := s.db.Exec(DeleteTransactionQuery, id)
-		cnt, err := res.RowsAffected()
-		if cnt == 0 {
-			return ErrTransactionNotExist
-		}
-		if err != nil {
-			return err
-		}
-		return err
-	})
-}
+// func (s *store) DeleteTransaction(ctx context.Context, id string) (err error) {
+// 	return Transact(ctx, s.db, &sql.TxOptions{}, func(ctx context.Context) error {
+// 		res, err := s.db.Exec(DeleteTransactionQuery, id)
+// 		cnt, err := res.RowsAffected()
+// 		if cnt == 0 {
+// 			return ErrTransactionNotExist
+// 		}
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return err
+// 	})
+// }
 
 func (s *store) UpdateTransaction(ctx context.Context, transaction *Transaction) (err error) {
 

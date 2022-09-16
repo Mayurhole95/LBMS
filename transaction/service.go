@@ -11,7 +11,6 @@ import (
 type Service interface {
 	list(ctx context.Context) (response listResponse, err error)
 	create(ctx context.Context, req Transaction) (err error)
-	delete(ctx context.Context, id string) (err error)
 	update(ctx context.Context, req Transaction) (err error)
 }
 
@@ -68,20 +67,6 @@ func (cs *transactionService) update(ctx context.Context, c Transaction) (err er
 	})
 	if err != nil {
 		cs.logger.Error("Error updating transaction", "err", err.Error(), "transaction", c)
-		return
-	}
-
-	return
-}
-
-func (cs *transactionService) delete(ctx context.Context, id string) (err error) {
-	err = cs.store.DeleteTransaction(ctx, id)
-	if err == db.ErrTransactionNotExist {
-		cs.logger.Error("Transaction Not present", "err", err.Error(), "transaction_id", id)
-		return errNoTransactionId
-	}
-	if err != nil {
-		cs.logger.Error("Error deleting transaction", "err", err.Error(), "transaction_id", id)
 		return
 	}
 
