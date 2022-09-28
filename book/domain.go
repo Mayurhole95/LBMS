@@ -2,7 +2,7 @@ package book
 
 import "github.com/Mayurhole95/LBMS/db"
 
-type updateRequest struct {
+type UpdateRequest struct {
 	ID              string `json:"id"`
 	Name            string `json:"name"`
 	Author          string `json:"author"`
@@ -12,7 +12,7 @@ type updateRequest struct {
 	AvailableCopies int    `json:"available_copies"`
 }
 
-type createRequest struct {
+type CreateRequest struct {
 	ID              string `json:"id"`
 	Name            string `json:"name"`
 	Author          string `json:"author"`
@@ -30,14 +30,19 @@ type listResponse struct {
 	Books []db.Book `json:"books"`
 }
 
-func (cr createRequest) Validate() (err error) {
+func (cr CreateRequest) Validate() (err error) {
 	if cr.Name == "" {
 		return errEmptyName
 	}
 	return
+
+	if cr.Status == "" || cr.Status != "Available" && cr.Status != "Unavailable" {
+		return errInvalidStatus
+	}
+	return
 }
 
-func (ur updateRequest) Validate() (err error) {
+func (ur UpdateRequest) Validate() (err error) {
 	if ur.ID == "" {
 		return errEmptyID
 	}

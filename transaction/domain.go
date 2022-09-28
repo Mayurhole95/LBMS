@@ -10,6 +10,10 @@ type Transaction struct {
 	BookID     string `json:"book_id"`
 	UserID     string `json:"user_id"`
 }
+type RequestStatus struct {
+	UserID string `json:"user_id"`
+	BookID string `json:"book_id"`
+}
 
 type listResponse struct {
 	Transactions []db.Transaction `json:"transactions"`

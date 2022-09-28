@@ -11,15 +11,16 @@ import (
 )
 
 type Service interface {
-	list(ctx context.Context) (response listResponse, err error)
-	create(ctx context.Context, req createRequest) (err error)
-	findByID(ctx context.Context, id string) (response findByIDResponse, err error)
-	deleteByID(ctx context.Context, id string) (err error)
-	update(ctx context.Context, req updateRequest) (err error)
+	List(ctx context.Context) (response ListResponse, err error)
+	Create(ctx context.Context, req CreateRequest) (err error)
+	FindByID(ctx context.Context, id string) (response FindByIDResponse, err error)
+	DeleteByID(ctx context.Context, id string) (err error)
+	Update(ctx context.Context, req UpdateRequest) (err error)
+	ResetPassword(ctx context.Context, req ResetRequest) (err error)
 	GenerateJWT(ctx context.Context, Email string, Password string) (tokenString string, err error)
 }
 
-type userService struct {
+type UserService struct {
 	store  db.Storer
 	logger *zap.SugaredLogger
 }
@@ -33,7 +34,7 @@ type JWTClaim struct {
 
 var jwtKey = []byte("jsd549$^&")
 
-func (cs *userService) GenerateJWT(ctx context.Context, Email string, Password string) (tokenString string, err error) {
+func (cs *UserService) GenerateJWT(ctx context.Context, Email string, Password string) (tokenString string, err error) {
 
 	// var cs *userService
 	user, err := cs.store.FindUserByEmail(ctx, Email)
@@ -41,9 +42,9 @@ func (cs *userService) GenerateJWT(ctx context.Context, Email string, Password s
 		cs.logger.Error("No user present", "err", err.Error())
 		return "", errNoUserId
 	}
-	if err != nil {
-		cs.logger.Error("Error finding user", "err", err.Error(), "email", Email)
-		return
+	if Password != user.Password {
+		return "", errWrongPassword
+
 	}
 
 	expirationTime := time.Now().Add(1 * time.Hour)
@@ -60,7 +61,7 @@ func (cs *userService) GenerateJWT(ctx context.Context, Email string, Password s
 	return
 }
 
-func (cs *userService) list(ctx context.Context) (response listResponse, err error) {
+func (cs *UserService) List(ctx context.Context) (response ListResponse, err error) {
 	users, err := cs.store.ListUsers(ctx)
 	if err == db.ErrUserNotExist {
 		cs.logger.Error("No user present", "err", err.Error())
@@ -75,12 +76,12 @@ func (cs *userService) list(ctx context.Context) (response listResponse, err err
 	return
 }
 
-func (cs *userService) create(ctx context.Context, c createRequest) (err error) {
-	err = c.Validate()
-	if err != nil {
-		cs.logger.Errorw("Invalid request for user create", "msg", err.Error(), "user", c)
-		return
-	}
+func (cs *UserService) Create(ctx context.Context, c CreateRequest) (err error) {
+	//err = c.Validate()
+	// if err != nil {
+	// 	cs.logger.Errorw("Invalid request for user create", "msg", err.Error(), "user", c)
+	// 	return
+	// }
 	uuidgen := uuid.New()
 	c.ID = uuidgen.String()
 	err = cs.store.CreateUser(ctx, &db.User{
@@ -101,12 +102,12 @@ func (cs *userService) create(ctx context.Context, c createRequest) (err error) 
 	return
 }
 
-func (cs *userService) update(ctx context.Context, c updateRequest) (err error) {
-	err = c.Validate()
-	if err != nil {
-		cs.logger.Error("Invalid Request for user update", "err", err.Error(), "user", c)
-		return
-	}
+func (cs *UserService) Update(ctx context.Context, c UpdateRequest) (err error) {
+	// err = c.Validate()
+	// if err != nil {
+	// 	cs.logger.Error("Invalid Request for user update", "err", err.Error(), "user", c)
+	// 	return
+	// }
 
 	err = cs.store.UpdateUser(ctx, &db.User{
 		ID:         c.ID,
@@ -124,8 +125,21 @@ func (cs *userService) update(ctx context.Context, c updateRequest) (err error) 
 
 	return
 }
+func (cs *UserService) ResetPassword(ctx context.Context, c ResetRequest) (err error) {
 
-func (cs *userService) findByID(ctx context.Context, id string) (response findByIDResponse, err error) {
+	err = cs.store.ResetPassword(ctx, &db.User{
+		ID:       c.ID,
+		Password: c.NewPassword,
+	})
+	if err != nil {
+		cs.logger.Error("Error updating password", "err", err.Error(), "user", c)
+		return
+	}
+
+	return
+}
+
+func (cs *UserService) FindByID(ctx context.Context, id string) (response FindByIDResponse, err error) {
 	user, err := cs.store.FindUserByID(ctx, id)
 	if err == db.ErrUserNotExist {
 		cs.logger.Error("No user present", "err", err.Error())
@@ -140,7 +154,7 @@ func (cs *userService) findByID(ctx context.Context, id string) (response findBy
 	return
 }
 
-func (cs *userService) deleteByID(ctx context.Context, id string) (err error) {
+func (cs *UserService) DeleteByID(ctx context.Context, id string) (err error) {
 	err = cs.store.DeleteUserByID(ctx, id)
 	if err == db.ErrUserNotExist {
 		cs.logger.Error("User Not present", "err", err.Error(), "user_id", id)
@@ -155,7 +169,7 @@ func (cs *userService) deleteByID(ctx context.Context, id string) (err error) {
 }
 
 func NewService(s db.Storer, l *zap.SugaredLogger) Service {
-	return &userService{
+	return &UserService{
 		store:  s,
 		logger: l,
 	}

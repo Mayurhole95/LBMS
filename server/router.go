@@ -121,6 +121,7 @@ func initRouter(dep dependencies) (router *mux.Router) {
 	router.HandleFunc("/users/{user_id}", Authorize(user.FindByID(dep.UserService), USER)).Methods(http.MethodGet)
 	router.HandleFunc("/users/{user_id}", Authorize(user.DeleteByID(dep.UserService), ADMIN)).Methods(http.MethodDelete)
 	router.HandleFunc("/users", Authorize(user.Update(dep.UserService), USER)).Methods(http.MethodPut)
+	router.HandleFunc("/resetpassword", Authorize(user.ResetPassword(dep.UserService), USER)).Methods(http.MethodPut)
 
 	//Book
 
@@ -129,6 +130,7 @@ func initRouter(dep dependencies) (router *mux.Router) {
 	router.HandleFunc("/books/{book_id}", Authorize(book.FindByID(dep.BookService), USER)).Methods(http.MethodGet)
 	router.HandleFunc("/books/{book_id}", Authorize(book.DeleteByID(dep.BookService), ADMIN)).Methods(http.MethodDelete)
 	router.HandleFunc("/books", Authorize(book.Update(dep.BookService), ADMIN)).Methods(http.MethodPut)
+	router.HandleFunc("/bookstatus", Authorize(transaction.GetBookStatus(dep.TransactionService), USER)).Methods(http.MethodGet)
 
 	//Transaction
 

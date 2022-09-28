@@ -2,11 +2,12 @@ package user
 
 import (
 	"net/mail"
+	"unicode"
 
 	"github.com/Mayurhole95/LBMS/db"
 )
 
-type updateRequest struct {
+type UpdateRequest struct {
 	ID         string `json:"id"`
 	First_Name string `json:"first_name"`
 	Last_name  string `json:"last_name"`
@@ -15,8 +16,13 @@ type updateRequest struct {
 	Password   string `json:"password"`
 	Mob_no     string `json:"mob_no"`
 }
+type ResetRequest struct {
+	ID          string `json:"id"`
+	Password    string `json:"password"`
+	NewPassword string `json:"newpassword"`
+}
 
-type createRequest struct {
+type CreateRequest struct {
 	ID         string `json:"id"`
 	First_name string `json:"first_name"`
 	Last_name  string `json:"last_name"`
@@ -28,26 +34,40 @@ type createRequest struct {
 	Role       string `json:"role"`
 }
 
-type findByIDResponse struct {
+type FindByIDResponse struct {
 	User db.User `json:"user"`
 }
 
-type listResponse struct {
+type ListResponse struct {
 	Users []db.User `json:"users"`
 }
 
-func (cr createRequest) Validate() (err error) {
+func (cr CreateRequest) Validate() (err error) {
 	if cr.First_name == "" {
 		return errEmptyName
+	}
+	for _, r := range cr.First_name {
+		if !unicode.IsLetter(r) {
+			return errInvalidFirstName
+		}
 	}
 	if cr.Last_name == "" {
 		return errEmptyLastName
 	}
+	for _, r := range cr.Last_name {
+		if !unicode.IsLetter(r) {
+			return errInvalidLastName
+		}
+	}
 	if cr.Password == "" {
 		return errEmptyPassword
 	}
-	if cr.Gender == "" {
-		return errEmptyGender
+	if len(cr.Password) < 6 {
+		return InvalidPassword
+	}
+
+	if cr.Gender == "" || cr.Gender != "Male" && cr.Gender != "male" && cr.Gender != "Female" && cr.Gender != "female" && cr.Gender != "other" && cr.Gender != "Other" {
+		return errInvalidGender
 	}
 	if cr.Address == "" {
 		return errEmptyAddress
@@ -61,11 +81,32 @@ func (cr createRequest) Validate() (err error) {
 	if cr.Role == "" {
 		return errEmptyRole
 	}
-	if cr.Role != "user" && cr.Role != "admin" && cr.Role != "superadmin" {
+	if cr.Role != "user" && cr.Role != "admin" {
 		return errRoleType
 	}
 	_, b := mail.ParseAddress(cr.Email)
 	if b != nil {
+		return errNotValidMail
+	}
+	checkEmail := cr.Email
+	flag := false
+	lastapperance := 0
+	for i := 0; i < len(checkEmail); i++ {
+		if checkEmail[i] == '@' {
+			flag = true
+			lastapperance = i
+		}
+	}
+	if !flag {
+		return errNotValidMail
+	}
+	flag = false
+	for i := lastapperance; i < len(checkEmail); i++ {
+		if checkEmail[i] == '.' {
+			flag = true
+		}
+	}
+	if !flag {
 		return errNotValidMail
 	}
 	if len(cr.Mob_no) < 10 || len(cr.Mob_no) > 10 {
@@ -74,7 +115,7 @@ func (cr createRequest) Validate() (err error) {
 	return
 }
 
-func (ur updateRequest) Validate() (err error) {
+func (ur UpdateRequest) Validate() (err error) {
 	if ur.ID == "" {
 		return errEmptyID
 	}

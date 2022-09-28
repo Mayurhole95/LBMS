@@ -9,9 +9,10 @@ import (
 )
 
 type Service interface {
-	list(ctx context.Context) (response listResponse, err error)
-	create(ctx context.Context, req Transaction) (err error)
-	update(ctx context.Context, req Transaction) (err error)
+	List(ctx context.Context) (response listResponse, err error)
+	Create(ctx context.Context, req Transaction) (err error)
+	Update(ctx context.Context, req Transaction) (err error)
+	BookStatus(ctx context.Context, c RequestStatus) (response string, err error)
 }
 
 type transactionService struct {
@@ -19,7 +20,7 @@ type transactionService struct {
 	logger *zap.SugaredLogger
 }
 
-func (cs *transactionService) list(ctx context.Context) (response listResponse, err error) {
+func (cs *transactionService) List(ctx context.Context) (response listResponse, err error) {
 	transactions, err := cs.store.ListTransaction(ctx)
 	if err == db.ErrTransactionNotExist {
 		cs.logger.Error("No transaction present", "err", err.Error())
@@ -34,7 +35,7 @@ func (cs *transactionService) list(ctx context.Context) (response listResponse, 
 	return
 }
 
-func (cs *transactionService) create(ctx context.Context, c Transaction) (err error) {
+func (cs *transactionService) Create(ctx context.Context, c Transaction) (err error) {
 	err = c.Validate()
 	if err != nil {
 		cs.logger.Errorw("Invalid request for transaction creation", "msg", err.Error(), "transaction", c)
@@ -57,7 +58,7 @@ func (cs *transactionService) create(ctx context.Context, c Transaction) (err er
 	return
 }
 
-func (cs *transactionService) update(ctx context.Context, c Transaction) (err error) {
+func (cs *transactionService) Update(ctx context.Context, c Transaction) (err error) {
 
 	err = cs.store.UpdateTransaction(ctx, &db.Transaction{
 
@@ -70,6 +71,19 @@ func (cs *transactionService) update(ctx context.Context, c Transaction) (err er
 		return
 	}
 
+	return
+}
+
+func (cs *transactionService) BookStatus(ctx context.Context, c RequestStatus) (response string, err error) {
+	response, err = cs.store.BookStatus(ctx, c.BookID, c.UserID)
+	if err == db.ErrUserNotExist {
+		cs.logger.Error("No Transaction present", "err", err.Error())
+		return response, errNoTransaction
+	}
+	if err != nil {
+		cs.logger.Error("Error listing Transactions", "err", err.Error())
+		return
+	}
 	return
 }
 

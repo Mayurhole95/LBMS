@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/Mayurhole95/LBMS/api"
+	"github.com/Mayurhole95/LBMS/db"
 	"github.com/gorilla/mux"
 )
 
@@ -12,6 +13,9 @@ type Authentication struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
+
+var v db.User
+var flag int = 0
 
 func Login(service Service) http.HandlerFunc {
 	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
@@ -34,14 +38,20 @@ func Login(service Service) http.HandlerFunc {
 
 func Create(service Service) http.HandlerFunc {
 	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
-		var c createRequest
+		var c CreateRequest
+
 		err := json.NewDecoder(req.Body).Decode(&c)
 		if err != nil {
 			api.Error(rw, http.StatusBadRequest, api.Response{Message: err.Error()})
 			return
 		}
+		err = c.Validate()
+		if err != nil {
+			api.Error(rw, http.StatusBadRequest, api.Response{Message: err.Error()})
+			return
+		}
 
-		err = service.create(req.Context(), c)
+		err = service.Create(req.Context(), c)
 		if isBadRequest(err) {
 			api.Error(rw, http.StatusBadRequest, api.Response{Message: err.Error()})
 			return
@@ -58,7 +68,7 @@ func Create(service Service) http.HandlerFunc {
 
 func List(service Service) http.HandlerFunc {
 	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
-		resp, err := service.list(req.Context())
+		resp, err := service.List(req.Context())
 		if err == errNoUsers {
 			api.Error(rw, http.StatusNotFound, api.Response{Message: err.Error()})
 			return
@@ -76,7 +86,7 @@ func FindByID(service Service) http.HandlerFunc {
 	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		vars := mux.Vars(req)
 
-		resp, err := service.findByID(req.Context(), vars["user_id"])
+		resp, err := service.FindByID(req.Context(), vars["user_id"])
 
 		if err == errNoUserId {
 			api.Error(rw, http.StatusNotFound, api.Response{Message: err.Error()})
@@ -95,7 +105,7 @@ func DeleteByID(service Service) http.HandlerFunc {
 	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		vars := mux.Vars(req)
 
-		err := service.deleteByID(req.Context(), vars["user_id"])
+		err := service.DeleteByID(req.Context(), vars["user_id"])
 		if err == errNoUserId {
 			api.Error(rw, http.StatusNotFound, api.Response{Message: err.Error()})
 		}
@@ -110,14 +120,14 @@ func DeleteByID(service Service) http.HandlerFunc {
 
 func Update(service Service) http.HandlerFunc {
 	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
-		var c updateRequest
+		var c UpdateRequest
 		err := json.NewDecoder(req.Body).Decode(&c)
 		if err != nil {
 			api.Error(rw, http.StatusBadRequest, api.Response{Message: err.Error()})
 			return
 		}
 
-		err = service.update(req.Context(), c)
+		err = service.Update(req.Context(), c)
 		if isBadRequest(err) {
 			api.Error(rw, http.StatusBadRequest, api.Response{Message: err.Error()})
 			return
@@ -129,6 +139,45 @@ func Update(service Service) http.HandlerFunc {
 		}
 
 		api.Success(rw, http.StatusOK, api.Response{Message: "Updated Successfully"})
+	})
+}
+func ResetPassword(service Service) http.HandlerFunc {
+	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		var c ResetRequest
+		resp, err := service.List(req.Context())
+
+		if err != nil {
+			api.Error(rw, http.StatusBadRequest, api.Response{Message: err.Error()})
+			return
+		}
+
+		err = json.NewDecoder(req.Body).Decode(&c)
+
+		if err != nil {
+			api.Error(rw, http.StatusBadRequest, api.Response{Message: err.Error()})
+			return
+		}
+		flag = 0
+		for _, v = range resp.Users {
+			if v.ID == c.ID && v.Password == c.Password {
+				flag = 1
+				err = service.ResetPassword(req.Context(), c)
+				if isBadRequest(err) {
+					api.Error(rw, http.StatusBadRequest, api.Response{Message: err.Error()})
+					return
+				}
+
+				if err != nil {
+					api.Error(rw, http.StatusInternalServerError, api.Response{Message: err.Error()})
+					return
+				}
+
+				api.Success(rw, http.StatusOK, api.Response{Message: "Updated Successfully"})
+			}
+		}
+		if flag != 1 {
+			api.Success(rw, http.StatusOK, api.Response{Message: "Invalid Password"})
+		}
 	})
 }
 
