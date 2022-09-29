@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"database/sql"
+	"fmt"
 )
 
 const (
@@ -13,21 +14,22 @@ const (
 	listUsersQuery       = `SELECT * FROM user`
 	findUserByIDQuery    = `SELECT * FROM user WHERE id = ?`
 	deleteUserByIDQuery  = `DELETE FROM user WHERE id = ?`
-	updateUserQuery      = `UPDATE user SET first_name=?, last_name=?, gender=?, address=?, password=?, mob_no=? WHERE id=? `
+	updateUserQuery      = `UPDATE user SET first_name=?, last_name=?, gender=?, address=?, mob_no=? WHERE id=? `
 	resetPasswordQuery   = `UPDATE user SET password = ? WHERE id =?`
+	IDExistQuery         = `SELECT COUNT(*) FROM user WHERE user.id = ?`
 )
 
 type User struct {
-	ID          string `db:"id"`
-	First_name  string `db:"first_name"`
-	Last_name   string `db:"last_name"`
-	Gender      string `db:"gender"`
-	Address     string `db:"address"`
-	Email       string `db:"email"`
-	Password    string `db:"password"`
-	Mob_no      string `db:"mob_no"`
-	Role        string `db:"role"`
-	NewPassword string `db:"password"`
+	ID         string `db:"id"`
+	First_name string `db:"first_name"`
+	Last_name  string `db:"last_name"`
+	Gender     string `db:"gender"`
+	Address    string `db:"address"`
+	Email      string `db:"email"`
+	Password   string `db:"password"`
+	Mob_no     string `db:"mob_no"`
+	Role       string `db:"role"`
+	//NewPassword string `db:"password"`
 }
 
 func (s *store) CreateUser(ctx context.Context, user *User) (err error) {
@@ -86,19 +88,27 @@ func (s *store) DeleteUserByID(ctx context.Context, id string) (err error) {
 
 func (s *store) UpdateUser(ctx context.Context, user *User) (err error) {
 
-	return Transact(ctx, s.db, &sql.TxOptions{}, func(ctx context.Context) error {
-		_, err = s.db.Exec(
-			updateUserQuery,
-			user.First_name,
-			user.Last_name,
-			user.Gender,
-			user.Address,
-			user.Password,
-			user.Mob_no,
-			user.ID,
-		)
-		return err
-	})
+	flag := 0
+
+	s.db.GetContext(ctx, &flag, IDExistQuery, user.ID)
+	fmt.Println(flag)
+
+	if flag == 0 {
+		return ErrIDNotExist
+	} else {
+		return Transact(ctx, s.db, &sql.TxOptions{}, func(ctx context.Context) error {
+			_, err = s.db.Exec(
+				updateUserQuery,
+				user.First_name,
+				user.Last_name,
+				user.Gender,
+				user.Address,
+				user.Mob_no,
+				user.ID,
+			)
+			return err
+		})
+	}
 }
 
 func (s *store) ResetPassword(ctx context.Context, user *User) (err error) {

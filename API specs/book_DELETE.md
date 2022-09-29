@@ -2,10 +2,10 @@
 Deescrription : This API will delete the book
 
 ### HTTP Request
-`DELETE /bookid`
+`DELETE/bookid`
 
 ### URL Parameters
-/book/delete
+//books/delete
 
 ### Query Parameters
 N/A
@@ -19,12 +19,12 @@ Content-Type: application/x-www-form-urlencoded
 ### Request Body
 | Parameter | Format | Description                                |
 |-----------|--------|--------------------------------------------|
-| Name     | String | name of book |
-| id   | String | id of specific book that is to be deleted     |
+
 
 
 ### Sample cURL request
 ```
+'localhost:8004/books/94ba9ccc-ed96-4110-a957-29d0e0ee492a' 
  
 ```
 

@@ -74,6 +74,7 @@ func DeleteByID(service Service) http.HandlerFunc {
 		err := service.DeleteByID(req.Context(), vars["book_id"])
 		if err == errNoBookId {
 			api.Error(rw, http.StatusNotFound, api.Response{Message: err.Error()})
+			return
 		}
 		if err != nil {
 			api.Error(rw, http.StatusInternalServerError, api.Response{Message: err.Error()})

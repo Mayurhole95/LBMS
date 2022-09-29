@@ -103,11 +103,11 @@ func (cs *UserService) Create(ctx context.Context, c CreateRequest) (err error) 
 }
 
 func (cs *UserService) Update(ctx context.Context, c UpdateRequest) (err error) {
-	// err = c.Validate()
-	// if err != nil {
-	// 	cs.logger.Error("Invalid Request for user update", "err", err.Error(), "user", c)
-	// 	return
-	// }
+	err = c.Validate()
+	if err != nil {
+		cs.logger.Error("Invalid Request for user update", "err", err.Error(), "user", c)
+		return
+	}
 
 	err = cs.store.UpdateUser(ctx, &db.User{
 		ID:         c.ID,
@@ -115,7 +115,6 @@ func (cs *UserService) Update(ctx context.Context, c UpdateRequest) (err error) 
 		Last_name:  c.Last_name,
 		Gender:     c.Gender,
 		Address:    c.Address,
-		Password:   c.Password,
 		Mob_no:     c.Mob_no,
 	})
 	if err != nil {

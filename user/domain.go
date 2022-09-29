@@ -78,6 +78,9 @@ func (cr CreateRequest) Validate() (err error) {
 	if cr.Mob_no == "" {
 		return errEmptyMobNo
 	}
+	if len(cr.Mob_no) != 10 {
+		return errInvalidMobNo
+	}
 	if cr.Role == "" {
 		return errEmptyRole
 	}
@@ -121,6 +124,31 @@ func (ur UpdateRequest) Validate() (err error) {
 	}
 	if ur.First_Name == "" {
 		return errEmptyName
+	}
+	for _, r := range ur.First_Name {
+		if !unicode.IsLetter(r) {
+			return errInvalidFirstName
+		}
+	}
+	if ur.Last_name == "" {
+		return errEmptyLastName
+	}
+	for _, r := range ur.Last_name {
+		if !unicode.IsLetter(r) {
+			return errInvalidLastName
+		}
+	}
+	if ur.Gender == "" || ur.Gender != "Male" && ur.Gender != "male" && ur.Gender != "Female" && ur.Gender != "female" && ur.Gender != "other" && ur.Gender != "Other" {
+		return errInvalidGender
+	}
+	if ur.Address == "" {
+		return errEmptyAddress
+	}
+	if ur.Mob_no == "" {
+		return errEmptyMobNo
+	}
+	if len(ur.Mob_no) != 10 {
+		return errInvalidMobNo
 	}
 
 	return

@@ -1,6 +1,10 @@
 package book
 
-import "github.com/Mayurhole95/LBMS/db"
+import (
+	"unicode"
+
+	"github.com/Mayurhole95/LBMS/db"
+)
 
 type UpdateRequest struct {
 	ID              string `json:"id"`
@@ -34,10 +38,34 @@ func (cr CreateRequest) Validate() (err error) {
 	if cr.Name == "" {
 		return errEmptyName
 	}
-	return
+	if cr.Author == "" {
+		return errEmptyAuthor
+	}
 
-	if cr.Status == "" || cr.Status != "Available" && cr.Status != "Unavailable" {
+	if cr.TotalCopies == 0 {
+		return errZeroCopies
+	}
+	if !unicode.IsNumber(rune(cr.TotalCopies)) {
+		return errInvalidTotalCopies
+	}
+	if cr.Price < 1 {
+		return errInvalidPrice
+	}
+	// if !unicode.IsNumber(cr.Price) {
+	//  return errInvalidPrice
+	// }
+	if !unicode.IsNumber(rune(cr.Price)) {
+		return errInvalidPrice
+	}
+
+	if cr.Status != "available" {
 		return errInvalidStatus
+	}
+	if cr.AvailableCopies > cr.TotalCopies {
+		return errInvalidAvailableCopies
+	}
+	if !unicode.IsNumber(rune(cr.AvailableCopies)) {
+		return err1InvalidAvailableCopies
 	}
 	return
 }

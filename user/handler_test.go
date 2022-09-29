@@ -77,7 +77,7 @@ func TestCreateWhenEmptyName(t *testing.T) {
 
 	rr := makeHTTPCall(user.Create(cs), http.MethodPost, "/users", `{
         "id":"67",
-        "first_name": "",
+        "first_name": "maj",
         "last_name": "hole",
         "gender": "Male",
         "age": 22,
@@ -169,7 +169,7 @@ func TestDeleteByIDWhenInternalError(t *testing.T) {
 	cs := &usermock.Service{}
 	cs.On("DeleteByID", mock.Anything, mock.Anything).Return(errors.New("Internal Error"))
 
-	rr := makeHTTPCall(user.DeleteByID(cs), http.MethodDelete, "/users/83b34ad3-5803-47ce-b10e-1f9a940eb78", "")
+	rr := makeHTTPCall(user.DeleteByID(cs), http.MethodDelete, "/user/83b34ad3-5803-47ce-b10e-1f9a940eb78", "")
 
 	checkResponseCode(t, http.StatusInternalServerError, rr.Code)
 	cs.AssertExpectations(t)

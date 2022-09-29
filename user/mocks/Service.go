@@ -14,6 +14,55 @@ type Service struct {
 	mock.Mock
 }
 
+// Create provides a mock function with given fields: ctx, req
+func (_m *Service) Create(ctx context.Context, req user.CreateRequest) error {
+	ret := _m.Called(ctx, req)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, user.CreateRequest) error); ok {
+		r0 = rf(ctx, req)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// DeleteByID provides a mock function with given fields: ctx, id
+func (_m *Service) DeleteByID(ctx context.Context, id string) error {
+	ret := _m.Called(ctx, id)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
+		r0 = rf(ctx, id)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// FindByID provides a mock function with given fields: ctx, id
+func (_m *Service) FindByID(ctx context.Context, id string) (user.FindByIDResponse, error) {
+	ret := _m.Called(ctx, id)
+
+	var r0 user.FindByIDResponse
+	if rf, ok := ret.Get(0).(func(context.Context, string) user.FindByIDResponse); ok {
+		r0 = rf(ctx, id)
+	} else {
+		r0 = ret.Get(0).(user.FindByIDResponse)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GenerateJWT provides a mock function with given fields: ctx, Email, Password
 func (_m *Service) GenerateJWT(ctx context.Context, Email string, Password string) (string, error) {
 	ret := _m.Called(ctx, Email, Password)
@@ -35,56 +84,7 @@ func (_m *Service) GenerateJWT(ctx context.Context, Email string, Password strin
 	return r0, r1
 }
 
-// create provides a mock function with given fields: ctx, req
-func (_m *Service) Create(ctx context.Context, req user.CreateRequest) error {
-	ret := _m.Called(ctx, req)
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, user.CreateRequest) error); ok {
-		r0 = rf(ctx, req)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
-// deleteByID provides a mock function with given fields: ctx, id
-func (_m *Service) DeleteByID(ctx context.Context, id string) error {
-	ret := _m.Called(ctx, id)
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
-		r0 = rf(ctx, id)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
-// findByID provides a mock function with given fields: ctx, id
-func (_m *Service) FindByID(ctx context.Context, id string) (user.FindByIDResponse, error) {
-	ret := _m.Called(ctx, id)
-
-	var r0 user.FindByIDResponse
-	if rf, ok := ret.Get(0).(func(context.Context, string) user.FindByIDResponse); ok {
-		r0 = rf(ctx, id)
-	} else {
-		r0 = ret.Get(0).(user.FindByIDResponse)
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
-		r1 = rf(ctx, id)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// list provides a mock function with given fields: ctx
+// List provides a mock function with given fields: ctx
 func (_m *Service) List(ctx context.Context) (user.ListResponse, error) {
 	ret := _m.Called(ctx)
 
@@ -105,7 +105,21 @@ func (_m *Service) List(ctx context.Context) (user.ListResponse, error) {
 	return r0, r1
 }
 
-// update provides a mock function with given fields: ctx, req
+// ResetPassword provides a mock function with given fields: ctx, req
+func (_m *Service) ResetPassword(ctx context.Context, req user.ResetRequest) error {
+	ret := _m.Called(ctx, req)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, user.ResetRequest) error); ok {
+		r0 = rf(ctx, req)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// Update provides a mock function with given fields: ctx, req
 func (_m *Service) Update(ctx context.Context, req user.UpdateRequest) error {
 	ret := _m.Called(ctx, req)
 

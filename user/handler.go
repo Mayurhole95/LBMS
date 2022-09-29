@@ -108,7 +108,9 @@ func DeleteByID(service Service) http.HandlerFunc {
 		err := service.DeleteByID(req.Context(), vars["user_id"])
 		if err == errNoUserId {
 			api.Error(rw, http.StatusNotFound, api.Response{Message: err.Error()})
+			return
 		}
+
 		if err != nil {
 			api.Error(rw, http.StatusInternalServerError, api.Response{Message: err.Error()})
 			return
