@@ -1,7 +1,7 @@
 package book
 
 import (
-	"unicode"
+	"strings"
 
 	"github.com/Mayurhole95/LBMS/db"
 )
@@ -45,28 +45,26 @@ func (cr CreateRequest) Validate() (err error) {
 	if cr.TotalCopies == 0 {
 		return errZeroCopies
 	}
-	if !unicode.IsNumber(rune(cr.TotalCopies)) {
-		return errInvalidTotalCopies
-	}
+	// if !unicode.IsNumber(rune(cr.TotalCopies)) {
+	// 	return errInvalidTotalCopies
+	// }
 	if cr.Price < 1 {
 		return errInvalidPrice
 	}
-	// if !unicode.IsNumber(cr.Price) {
-	//  return errInvalidPrice
-	// }
-	if !unicode.IsNumber(rune(cr.Price)) {
-		return errInvalidPrice
-	}
 
-	if cr.Status != "available" {
+	// if unicode.IsNumber(rune(cr.Price)) {
+	// 	return errInvalidPrice
+	// }
+
+	if strings.ToLower(cr.Status) != "available" {
 		return errInvalidStatus
 	}
 	if cr.AvailableCopies > cr.TotalCopies {
 		return errInvalidAvailableCopies
 	}
-	if !unicode.IsNumber(rune(cr.AvailableCopies)) {
-		return err1InvalidAvailableCopies
-	}
+	// if !unicode.IsNumber(rune(cr.AvailableCopies)) {
+	// 	return err1InvalidAvailableCopies
+	// }
 	return
 }
 

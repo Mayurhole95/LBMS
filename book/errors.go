@@ -8,7 +8,6 @@ var (
 	errNoBooks                 = errors.New("No books present")
 	errNoBookId                = errors.New("Book is not present")
 	errInvalidStatus           = errors.New("Invalid Status of Book")
-	errInvalidAuthorName       = errors.New("Invalid Author Name")
 	errEmptyAuthor             = errors.New("EMpty author")
 	errZeroCopies              = errors.New("Zero Copies")
 	errInvalidTotalCopies      = errors.New("Invalid Total copies")

@@ -23,23 +23,30 @@ const (
 
 type Transaction struct {
 	ID         string `db:"id"`
-	IssueDate  int    `db:"issuedate"`
-	DueDate    int    `db:"duedate"`
-	ReturnDate int    `db:"returndate"`
+	IssueDate  string `db:"issuedate"`
+	DueDate    string `db:"duedate"`
+	ReturnDate string `db:"returndate"`
 	BookID     string `db:"book_id"`
 	UserID     string `db:"user_id"`
 }
 
 func (s *store) CreateTransaction(ctx context.Context, transaction *Transaction) (err error) {
 
+	// now := time.Now().UTC().Unix()
+	// transaction.DueDate = int(now) + 864000
 	now := time.Now().UTC().Unix()
-	transaction.DueDate = int(now) + 864000
+	t := time.Unix(now, 0)
+	strnow := t.Format(time.UnixDate)
+	transactionduedate := int(now) + 864000
+	t = time.Unix(int64(transactionduedate), 0)
+	strduedate := t.Format(time.UnixDate)
+
 	return Transact(ctx, s.db, &sql.TxOptions{}, func(ctx context.Context) error {
 		_, err = s.db.Exec(
 			createTransactionQuery,
 			transaction.ID,
-			now,
-			transaction.DueDate,
+			strnow,
+			strduedate,
 			0,
 			transaction.BookID,
 			transaction.UserID,
@@ -67,12 +74,15 @@ func (s *store) ListTransaction(ctx context.Context) (transactions []Transaction
 }
 
 func (s *store) UpdateTransaction(ctx context.Context, transaction *Transaction) (err error) {
+	//now := time.Now().UTC().Unix()
 	now := time.Now().UTC().Unix()
+	t := time.Unix(now, 0)
+	strnow := t.Format(time.UnixDate)
 	return Transact(ctx, s.db, &sql.TxOptions{}, func(ctx context.Context) error {
 		_, err = s.db.Exec(
 			UpdateTransactionQuery,
 
-			now,
+			strnow,
 			transaction.BookID,
 			transaction.UserID,
 		)

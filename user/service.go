@@ -42,9 +42,13 @@ func (cs *UserService) GenerateJWT(ctx context.Context, Email string, Password s
 		cs.logger.Error("No user present", "err", err.Error())
 		return "", errNoUserId
 	}
-	if Password != user.Password {
-		return "", errWrongPassword
+	// if Password != user.Password {
+	// 	return "", errWrongPassword
 
+	// }
+
+	if !CheckPasswordHash(Password, user.Password) {
+		return "", errWrongPassword
 	}
 
 	expirationTime := time.Now().Add(1 * time.Hour)

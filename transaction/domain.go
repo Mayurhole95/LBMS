@@ -4,9 +4,9 @@ import "github.com/Mayurhole95/LBMS/db"
 
 type Transaction struct {
 	ID         string `json:"id"`
-	IssueDate  int    `json:"issuedate"`
-	DueDate    int    `json:"duedate"`
-	ReturnDate int    `json:"returndate"`
+	IssueDate  string `json:"issuedate"`
+	DueDate    string `json:"duedate"`
+	ReturnDate string `json:"returndate"`
 	BookID     string `json:"book_id"`
 	UserID     string `json:"user_id"`
 }

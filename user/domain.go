@@ -18,8 +18,8 @@ type UpdateRequest struct {
 }
 type ResetRequest struct {
 	ID          string `json:"id"`
-	Password    string `json:"password"`
-	NewPassword string `json:"newpassword"`
+	Password    string `gorm:"size:100" json:"Password"`
+	NewPassword string `gorm:"size:100" json:"newpassword"`
 }
 
 type CreateRequest struct {
