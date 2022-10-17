@@ -2,11 +2,13 @@ package user
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/Mayurhole95/LBMS/api"
 	"github.com/Mayurhole95/LBMS/db"
 	"github.com/gorilla/mux"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Authentication struct {
@@ -16,6 +18,13 @@ type Authentication struct {
 
 var v db.User
 var flag int = 0
+
+func CheckPasswordHash(password, hash string) bool {
+
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	fmt.Println(err)
+	return err == nil
+}
 
 func Login(service Service) http.HandlerFunc {
 	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
@@ -159,9 +168,12 @@ func ResetPassword(service Service) http.HandlerFunc {
 			api.Error(rw, http.StatusBadRequest, api.Response{Message: err.Error()})
 			return
 		}
-		flag = 0
+
 		for _, v = range resp.Users {
-			if v.ID == c.ID && v.Password == c.Password {
+
+			// fmt.Println(v.Password)
+			// fmt.Println(c.Password)
+			if v.ID == c.ID && CheckPasswordHash(c.Password, v.Password) {
 				flag = 1
 				err = service.ResetPassword(req.Context(), c)
 				if isBadRequest(err) {
@@ -175,10 +187,14 @@ func ResetPassword(service Service) http.HandlerFunc {
 				}
 
 				api.Success(rw, http.StatusOK, api.Response{Message: "Updated Successfully"})
+				return
+			} else {
+				flag = 0
 			}
+
 		}
 		if flag != 1 {
-			api.Success(rw, http.StatusOK, api.Response{Message: "Invalid Password"})
+			api.Success(rw, http.StatusOK, api.Response{Message: "Invalid Password or ID"})
 		}
 	})
 }
